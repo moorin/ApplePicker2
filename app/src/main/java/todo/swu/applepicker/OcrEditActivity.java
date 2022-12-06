@@ -1,7 +1,6 @@
 package todo.swu.applepicker;
 
 import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -86,14 +85,14 @@ public class OcrEditActivity extends AppCompatActivity {
         // OCR 글자들 모음 List
         memoList = jsonParsing(jsonResponse);
         resultData = memoList.toString();
-        
+
         // 대괄호 없애기
         resultData = removeChar(resultData, 0);
         resultData = removeChar(resultData, resultData.length()-1);
 
         // 쉼표 없애기
 //        resultData= resultData.replace(",", "");
-        
+
 
         Log.e("test", "json 파싱 실행 후");
         //Log.e(memoList.toString(), "memoList");
@@ -137,7 +136,7 @@ public class OcrEditActivity extends AppCompatActivity {
 
                         memoMap.clear();
                         memoMap.put("size", Integer.valueOf(memoSizeStr) + finalMemoList.size());
-                        //memoMap.put("newImageSize", finalMemoList.size());
+                        memoMap.put("newImageSize", finalMemoList.size());
                         db.collection("/daily/" + dateToday + "/memoItem")
                                 .document("size")
                                 .set(memoMap);

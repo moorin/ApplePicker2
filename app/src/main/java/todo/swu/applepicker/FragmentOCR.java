@@ -187,5 +187,3 @@ public class FragmentOCR extends Fragment {
         return path;
     }
 }
-
-

@@ -165,61 +165,43 @@ public class FragmentDaily extends Fragment {
 
         });
 
-//        refreshBtn.setOnClickListener(v -> {
-//
-//            DocumentReference docRef = db.collection("daily/" + currentDate + "/memoItem").document("size");
-//            DocumentReference docRef2 = db.collection("daily/" + currentDate + "/memoItem").document("newImageSize");
-//
-//            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if (task.isSuccessful()) {
-//                        DocumentSnapshot document = task.getResult();
-//                        if (document.exists()) {
-//                            // size 문서가 있는 경우 size+=size
-//                            Log.e(TAG, "DocumentSnapshot data: " + document.getData());
-//
-//                            String allMemoSizeStr = document.getData().toString();
-//                            String[] sizes;
-//
-//                            Log.e("daily allMemoSizeStr: ", allMemoSizeStr);
-//                            // 중괄호 없애기
-//                            allMemoSizeStr = allMemoSizeStr.replace("{", "");
-//                            allMemoSizeStr = allMemoSizeStr.replace("}", "");
-//                            sizes = allMemoSizeStr.split(", ");
-//                            Log.e("sizes: ", sizes[0]);
-////                            allMemoSizeStr = allMemoSizeStr.replace("newImageSize=", "");
-////                            allMemoSizeStr = allMemoSizeStr.replace(", size=", "");
-//
-//
-//                            //setLastIndexSize(Integer.valueOf(allMemoSizeStr));
-//                        }
-//                    }
-//                }
-//            });
-//
-//            docRef2.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-//                @Override
-//                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-//                    if (task.isSuccessful()) {
-//                        DocumentSnapshot document = task.getResult();
-//                        if (document.exists()) {
-//                            // newImageSize 문서가 있는 경우 size+=size
-//                            Log.e(TAG, "DocumentSnapshot data: " + document.getData());
-//
-//                            String newImageSizeStr = document.getData().toString();
-//
-//                            Log.e("daily allMemoSizeStr: ", newImageSizeStr);
-//                            // 중괄호 없애기
-//                            newImageSizeStr = newImageSizeStr.replace("{", "");
-//                            newImageSizeStr = newImageSizeStr.replace("}", "");
-//                            newImageSizeStr = newImageSizeStr.replace("size=", "");
-//
-//                            //setNewImageSize(Integer.valueOf(newImageSizeStr));
-//                        }
-//                    }
-//                }
-//            });
+        refreshBtn.setOnClickListener(v -> {
+            for(int i=0;i<memoItemList.size();i++)
+                memoItemList.removeAll(memoItemList);
+
+            db.collection("daily/"+currentDate+"/memoItem")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+
+                                for (QueryDocumentSnapshot document : task.getResult())
+                                {
+                                    String resultStr = "";
+                                    Log.e(TAG, document.getId() + " => " + document.getData());
+                                    // get data 예시
+                                    edit_memo.setText(null);
+
+                                    resultStr = document.getData().toString();
+                                    resultStr = resultStr.replace("{memo=","");
+                                    resultStr = resultStr.replace("}","");
+                                    //Log.e("resultStr[0]", resultStr.indexOf());
+
+                                    memoItemList.add(new MemoItem(resultStr));
+
+
+                                }
+                                if(!memoItemList.isEmpty())
+                                    memoItemList.remove(memoItemList.size()-1);
+                                memoAdapter.notifyDataSetChanged();
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+
+                        }
+                    });
+        });
 //
 //            // 리스트로 보여주기
 //            db.collection("daily/" + currentDate + "/memoItem")
